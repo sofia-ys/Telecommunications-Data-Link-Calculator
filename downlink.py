@@ -77,5 +77,3 @@ def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, 
     values = [EIRP_tx, L_FS, G_over_T, (10 * np.log10(k_B * req_DL_dr)), L_ant, L_A]
 
     return EbN0, values
-
-print(downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, F, T_ant, width_sw, pixel_size, pixel_bits, D_C, T_DL, T0=290))

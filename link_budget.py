@@ -49,6 +49,6 @@ print("Uplink is: ",
                  tempAntSC, uplink_data_rate[case], pointing_offset_angle[case], rainLoss=0))
 print("Downlink is: ", 
      downlinkSNR(c, noiseFigureReceiver, antenna_diameter_spacecraft[case], eta_ant, pointing_offset_angle[case], R_e, orbit_altitude[case], 
-                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation, noiseFigureReceiver, 
+                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation[case], noiseFigureReceiver, 
                  tempAntSC, payload_swath_width[case], payload_pixel_size[case], payload_bits_per_pixel[case], payload_duty_cycle[case], 
                  payload_downlink_time[case], T0))
