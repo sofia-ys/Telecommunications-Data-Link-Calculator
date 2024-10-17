@@ -39,7 +39,6 @@ payload_bits_per_pixel = teleD.iloc[15, 1:6].tolist()
 payload_duty_cycle = teleD.iloc[16, 1:6].tolist()  
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
 required_ber = teleD.iloc[18, 1:6].tolist()
-zenith_attenuation = [0.035, 0.035, 0.48, 0.48, 0.49]
 
 case = int(input("Which case study? "))
 
