@@ -45,7 +45,7 @@ def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, 
 
     # free space loss
     d = R_e * (np.sqrt(((h + R_e)/R_e)**2 - (np.cos(alpha))**2) - np.sin(alpha))
-    L_FS = 20 * np.log10((4 * np.pi * d * 10**3)/wavelength) # [db]
+    L_FS = 20 * np.log10((4 * np.pi * d)/wavelength) # [db]
 
     # cable losses
     L_cable_tx = 10 * np.log10(L_tx)  # [dB]
