@@ -74,6 +74,6 @@ def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, 
 
     # downlink budget calculation
     EbN0 = EIRP_tx - L_FS - L_cable_tx - L_A - L_ant + G_over_T - 10 * np.log10(k_B * req_DL_dr)
-    values = [EIRP_tx, L_FS, G_over_T, (10 * np.log10(k_B * req_DL_dr)), L_ant, L_A]
+    values = [EIRP_tx, L_FS, G_over_T, 10 * np.log10(k_B * req_DL_dr), L_ant, L_A]
 
     return EbN0, values
