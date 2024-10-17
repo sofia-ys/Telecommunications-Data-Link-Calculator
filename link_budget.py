@@ -9,7 +9,7 @@ elevation = np.radians(10)  # minimum elevation [rad]
 zenith_attenuation = [0.035, 0.035, 0.48, 0.48, 0.49]  # zenith attenuation from graph
 T0 = 290  # reference temperature [K]
 tempAntSC = 25  # antenna noise [K]
-noiseFigureReceiver = 1  # noise figure [dB]
+noiseFigureReceiverTX = 1  # noise figure [dB]
 
 # constants
 c = 3 * 10**8  # speed of light [m/s]
@@ -48,7 +48,7 @@ print("Uplink is: ",
                 transmitter_power_ground[case], orbit_altitude[case], elevation, antenna_diameter_spacecraft[case], loss_factor_receiver[case], 
                  tempAntSC, uplink_data_rate[case], pointing_offset_angle[case], zenith_attenuation[case]),
      "\nDownlink is: ", 
-     downlinkSNR(c, noiseFigureReceiver, antenna_diameter_spacecraft[case], eta_ant, pointing_offset_angle[case], R_e, orbit_altitude[case], 
-                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation[case], noiseFigureReceiver, 
+     downlinkSNR(c, downlink_frequency[case], antenna_diameter_spacecraft[case], eta_ant, pointing_offset_angle[case], R_e, orbit_altitude[case], 
+                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation[case], noiseFigureReceiverTX, 
                  tempAntSC, payload_swath_width[case], payload_pixel_size[case], payload_bits_per_pixel[case], payload_duty_cycle[case], 
                  payload_downlink_time[case], T0))
