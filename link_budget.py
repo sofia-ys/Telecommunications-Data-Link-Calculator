@@ -40,7 +40,7 @@ payload_duty_cycle = teleD.iloc[16, 1:6].tolist()
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
 required_ber = teleD.iloc[18, 1:6].tolist()
 
-case = int(input("Which case study? "))
+case = 1 - int(input("Which case study? "))
 
 print("Uplink is: ", 
       uplinkSNR(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], 
