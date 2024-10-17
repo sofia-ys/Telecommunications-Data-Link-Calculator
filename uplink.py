@@ -11,7 +11,7 @@ def DB(value):
 
 
 def gParabolicAnt(d, freq, eff):
-    waveLength = C/freq
+    waveLength = C/(freq*10**9)
     g = ((np.pi)**2*d**2)/(waveLength**2)*eff
     return g
 
@@ -21,7 +21,7 @@ def EIRP(g, l, power):
 
 def lossFreeSpace(h, freq, elev):
     d = REARTH*(((h+REARTH)/REARTH - np.cos(np.radians(elev))**2)**0.5-np.sin(np.radians(elev)))
-    waveLength = C/freq
+    waveLength = C/(freq*10**9)
     l = (4*np.pi*d)/waveLength
     return DB(l)
 
@@ -33,11 +33,13 @@ def halfAngleParabolic(freq, d):
     alpha = 21/(freq*d)
     return alpha
 
-"""This is main function it is missing the atmospheric attenuation because of all frequncies are below 10GHZ"""
 
 def uplinkSNR(diameterGround, downlinkFrequency, turnAroundRatio, lossFactorTransmitter, powerTransmitter, orbitAltitude, 
-              elevation, diameterSC, lossFactorReceiver, noiseFigureReceiver, tempAntSC, bitRate, pointingOffset, rainLoss=0):
-    
+              elevation, diameterSC, lossFactorReceiver, noiseFigureReceiver, tempAntSC, bitRate, pointingOffsetGround, rainLoss=0):
+    if downlinkFrequency == 2.2: a0 = 0.035
+    if downlinkFrequency >= 8.4: a0 = 0.045
+    atmosphericAttenuation = a0/np.sin(np.radians(elevation))
+
     uplinkFrequency = turnAroundRatio*downlinkFrequency
     gainGround = gParabolicAnt(diameterGround, uplinkFrequency, EFFICIENCY)
     eirp = EIRP(gainGround,lossFactorTransmitter,powerTransmitter)
@@ -46,6 +48,7 @@ def uplinkSNR(diameterGround, downlinkFrequency, turnAroundRatio, lossFactorTran
     sytemTempSC = tSys(tempAntSC, lossFactorReceiver, noiseFigureReceiver)
     gt = DB(gainSatelite/sytemTempSC)
     halfAngle = halfAngleParabolic(uplinkFrequency, diameterGround)
-    pointingLoss = 12*(pointingOffset/halfAngle)**2
-    snr = eirp - lfs + gt - 10*np.log10(BOLTZMANN*bitRate) - pointingLoss - rainLoss
-    return snr
+    pointingLoss = 12*(pointingOffsetGround/halfAngle)**2
+    snr = eirp - lfs + gt - 10*np.log10(BOLTZMANN*bitRate) - pointingLoss - rainLoss -atmosphericAttenuation
+    values = [eirp, lfs, gt, 10*np.log10(BOLTZMANN*bitRate), pointingLoss, rainLoss, atmosphericAttenuation]
+    return snr, values
