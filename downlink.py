@@ -35,7 +35,7 @@ T_ant = 25  # antenna noise [K]
 F = 1  # noise figure [dB]
 
 
-def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, F, T_ant, width_sw, pixel_size, pixel_bits, bits_image, D_C, T_DL, T0=290):
+def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, F, T_ant, width_sw, pixel_size, pixel_bits, D_C, T_DL, T0=290):
 
     # transmitter antenna (parabolic) pointing loss
     wavelength = c/(f * 10**9)
@@ -60,7 +60,7 @@ def downlinkSNR(c, f, D_ant_sc, eta_ant, e_tx, R_e, h, alpha, L_tx, P_sc, L_a0, 
     L_A = L_a0 / np.sin(alpha)  # [dB]
 
     # temperature
-    T_cable_tx = T0 * ((1 - L_cable_tx)/L_cable_tx)
+    T_cable_tx = T0 * ((1 - L_tx)/L_tx)
     T_amp = T0 * (F - 1)
     T_sys = 10 * np.log10(T_ant + T_amp + T_cable_tx)
     G_over_T = G_tx - T_sys  # [dB]
