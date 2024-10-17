@@ -6,7 +6,7 @@ from downlink import downlinkSNR
 # assumed values
 eta_ant = 0.55  # antenna efficiency [-]
 elevation = np.radians(10)  # minimum elevation [rad]
-L_a0 = 0.5  # zenith attenuation from graph
+zenith_attenuation = [0.035, 0.035, 0.48, 0.48, 0.49]  # zenith attenuation from graph
 T0 = 290  # reference temperature [K]
 tempAntSC = 25  # antenna noise [K]
 noiseFigureReceiver = 1  # noise figure [dB]
@@ -38,7 +38,8 @@ payload_pixel_size = teleD.iloc[14, 1:6].tolist()
 payload_bits_per_pixel = teleD.iloc[15, 1:6].tolist()  
 payload_duty_cycle = teleD.iloc[16, 1:6].tolist()  
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
-required_ber = teleD.iloc[18, 1:6].tolist()  
+required_ber = teleD.iloc[18, 1:6].tolist()
+zenith_attenuation = [0.035, 0.035, 0.48, 0.48, 0.49]
 
 case = int(input("Which case study? "))
 
@@ -48,6 +49,6 @@ print("Uplink is: ",
                  tempAntSC, uplink_data_rate[case], pointing_offset_angle[case], rainLoss=0),
      "\nDownlink is: ", 
      downlinkSNR(c, noiseFigureReceiver, antenna_diameter_spacecraft[case], eta_ant, pointing_offset_angle[case], R_e, orbit_altitude[case], 
-                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], L_a0, noiseFigureReceiver, tempAntSC, 
-                 payload_swath_width[case], payload_pixel_size[case], payload_bits_per_pixel[case], payload_duty_cycle[case], 
+                 elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation, noiseFigureReceiver, 
+                 tempAntSC, payload_swath_width[case], payload_pixel_size[case], payload_bits_per_pixel[case], payload_duty_cycle[case], 
                  payload_downlink_time[case], T0))
