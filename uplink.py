@@ -15,12 +15,12 @@ def gParabolicAnt(d, freq, eff):
     g = ((np.pi)**2*d**2)/(waveLength**2)*eff
     return g
 
-def EIRP(g, l, power):
-    p = g*l*power
-    return DB(p)
+def EIRP(g, power):
+    p = DB(g)-0.5+DB(power)
+    return p
 
 def lossFreeSpace(h, freq, elev):
-    d = REARTH*(((h+REARTH)/REARTH - np.cos(np.radians(elev))**2)**0.5-np.sin(np.radians(elev)))
+    d = REARTH*((((h+REARTH)/REARTH)**2 - np.cos(elev)**2)**0.5-np.sin(elev))
     waveLength = C/(freq*10**9)
     l = (4*np.pi*d)/waveLength
     return DB(l)
@@ -36,11 +36,11 @@ def halfAngleParabolic(freq, d):
 
 def uplinkSNR(diameterGround, downlinkFrequency, turnAroundRatio, lossFactorTransmitter, powerTransmitter, orbitAltitude, 
               elevation, diameterSC, lossFactorReceiver, tempAntSC, bitRate, pointingOffsetGround, zenithAttenuation, rainLoss=0,  noiseFigureReceiver=3):
-    atmosphericAttenuation = zenithAttenuation/np.sin(np.radians(elevation))
+    atmosphericAttenuation = zenithAttenuation/np.sin(elevation)
 
     uplinkFrequency = turnAroundRatio*downlinkFrequency
     gainGround = gParabolicAnt(diameterGround, uplinkFrequency, EFFICIENCY)
-    eirp = EIRP(gainGround,lossFactorTransmitter,powerTransmitter)
+    eirp = EIRP(gainGround,powerTransmitter)
     lfs = lossFreeSpace(orbitAltitude, uplinkFrequency, elevation)
     gainSatelite = gParabolicAnt(diameterSC, uplinkFrequency, EFFICIENCY)
     sytemTempSC = tSys(tempAntSC, lossFactorReceiver, noiseFigureReceiver)
