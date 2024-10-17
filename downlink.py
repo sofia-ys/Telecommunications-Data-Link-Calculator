@@ -1,5 +1,10 @@
 import numpy as np
 
+# constants
+c = 3 * 10**8  # speed of light [m/s]
+R_e = 6371  # radius earth [km]
+k_B = 1.3806452 * 10**(-23)  # Boltzmann's constant [J/K]
+
 def downlinkSNR(c, f, antenna_diameter_spacecraft, eta_ant, pointing_offset_angle, R_e, orbit_altitude, elevation, loss_factor_transmitter, 
                 transmitter_power_spacecraft, zenith_attenuation, noiseFigureReceiver, tempAntSC, payload_swath_width, payload_pixel_size, 
                 payload_bits_per_pixel, payload_duty_cycle, payload_downlink_time, T0):
