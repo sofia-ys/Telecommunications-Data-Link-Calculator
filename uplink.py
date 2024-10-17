@@ -35,7 +35,7 @@ def halfAngleParabolic(freq, d):
 
 
 def uplinkSNR(diameterGround, downlinkFrequency, turnAroundRatio, lossFactorTransmitter, powerTransmitter, orbitAltitude, 
-              elevation, diameterSC, lossFactorReceiver, noiseFigureReceiver, tempAntSC, bitRate, pointingOffsetGround, rainLoss=0):
+              elevation, diameterSC, lossFactorReceiver, tempAntSC, bitRate, pointingOffsetGround, rainLoss=0,  noiseFigureReceiver=3):
     if downlinkFrequency == 2.2: a0 = 0.035
     if downlinkFrequency >= 8.4: a0 = 0.045
     atmosphericAttenuation = a0/np.sin(np.radians(elevation))
