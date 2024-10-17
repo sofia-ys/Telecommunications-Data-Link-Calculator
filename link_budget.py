@@ -1,6 +1,6 @@
 import pandas as pd 
 import numpy as np
-from uplink import uplinkSNR
+from uplink import uplink
 from downlink import downlinkSNR
 
 # assumed values
@@ -41,13 +41,24 @@ payload_downlink_time = teleD.iloc[17, 1:6].tolist()
 required_ber = teleD.iloc[18, 1:6].tolist()
 zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]
 
-case = 1 - int(input("Which case study? "))
+case = int(input("Which case study? "))-1
 
-print("Uplink is: ", 
-      uplinkSNR(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], 
-                transmitter_power_ground[case], orbit_altitude[case], elevation, antenna_diameter_spacecraft[case], loss_factor_receiver[case], 
-                 tempAntSC, uplink_data_rate[case], pointing_offset_angle[case], zenith_attenuation[case]),
-     "\nDownlink is: ", 
+
+uplinkData =  uplink(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], 
+                transmitter_power_ground[case], orbit_altitude[case], zenith_attenuation[case], antenna_diameter_spacecraft[case],
+                uplink_data_rate[case], case, elongation_angle[case])
+print(f"The SNR of uplink is {round(uplinkData[0], 2)}")
+print(f"The EIRP is {round(uplinkData[1][0], 2)}")
+print(f"The Pointing loss is {round(uplinkData[1][1], 2)}")
+print(f"The Free space loss is {round(uplinkData[1][2], 2)}")
+print(f"The atmospheric loss is {round(uplinkData[1][3], 2)}")
+print(f"The G/T is {round(uplinkData[1][4], 2)}")
+print(f"The Required data rate is {round(uplinkData[1][5], 2)}")
+print(f"The Boltzmann is {round(uplinkData[1][6], 2)}")
+
+
+
+print("Downlink is: ", 
      downlinkSNR(c, downlink_frequency[case], antenna_diameter_spacecraft[case], eta_ant, pointing_offset_angle[case], R_e, orbit_altitude[case], 
                  elevation, loss_factor_transmitter[case], transmitter_power_spacecraft[case], zenith_attenuation[case], noiseFigureReceiverTX, 
                  tempAntSC, payload_swath_width[case], payload_pixel_size[case], payload_bits_per_pixel[case], payload_duty_cycle[case], 
