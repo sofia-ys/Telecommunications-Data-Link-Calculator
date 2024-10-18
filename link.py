@@ -54,15 +54,15 @@ def spaceLossDeep(distanceEarthx, distanceSCx, angle, frequency):
 
 
 def dataRateSC(swatWidthAngle, altitude, bitsPerPixel, pixelSizeArcmin, dutyCycle, downlinkTime, case):
-    swatWidth = 2*altitude*np.tan(np.radians(swatWidthAngle)/2)
+    swatWidth = 2*altitude*np.tan(np.radians(swatWidthAngle/2))
     pixelAngle = 1/60*pixelSizeArcmin
-    pixelSize = 2*altitude*np.tan(np.radians(pixelAngle)/2)
+    pixelSize = 2*altitude*np.tan(np.radians(pixelAngle/2))
     if case == 0: v = (MUEARTH/(REARTH+altitude))**0.5
     elif case == 1: v = (MUMOON/(RADIUSMOON+altitude))**0.5
     elif case == 2: v = (MUMARS/(RMARS+altitude))**0.5
     elif case == 3: v = (MUMERCURY/(RMERCURY+altitude))**0.5
     elif case == 4: v = (MUSATURN/(RSATURN+altitude))**0.5
-    br = bitsPerPixel*(swatWidth*v)/pixelSize**2
+    br = bitsPerPixel*(swatWidth*v)/(pixelSize**2)
     rbr = br*(dutyCycle)/(downlinkTime/24)
     return rbr
 
