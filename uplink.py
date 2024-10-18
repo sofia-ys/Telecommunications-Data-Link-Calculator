@@ -1,22 +1,35 @@
 import numpy as np
 """CONSTANTS"""
 C = 299792458
-REARTH = 6371000
-T0 = 290
-EFFICIENCY = 0.55
+
+T0 = 290 #slides
+EFFICIENCY = 0.55 #slides
 BOLTZMANN = 1.380649*10**-23
-TSYSUPLINK = 614
+TSYSUPLINK = 614 #SLIDES
+TSYSDOWNLINK = 135 #SLIDES
 POINTINGLOSSGROUND = 0.12 #In DB assumed pointing offset of 0.1alpha as specified in slides
-ELEVATION = np.radians(10) #degree
+ELEVATION = np.radians(10) #degree slides
 
 EARTHSUNDIS = 149000*10**6
 EARTHMOONDIS = 384400000
 
 RADIUSMOON = 1737.4*10**3
+REARTH = 6371000
+RMARS = 3389.5*10**3
+RMERCURY = 2439.7*10**3
+RSATURN = 58232*10**3
+
+MUEARTH = 3.986004418*10**14
+MUMOON = 4.9048695*10**12
+MUMARS = 4.282837*10**13
+MUMERCURY = 2.2032*10**13
+MUSATURN = 3.7931187*10**16
 
 MARSSUNDIS = 206000*10**6
 MERCURYSUNDIS = 46000*10**6
 SATURNSUNDIS = 1429000*10**6
+
+
 
 
 def DB(input):
@@ -38,6 +51,21 @@ def spaceLossDeep(distanceEarthx, distanceSCx, angle, frequency):
     s = (distanceEarthx**2+distanceSCx**2-2*distanceEarthx*distanceSCx*np.cos(angle))**0.5
     loss = 20*np.log10((4*np.pi*s)/length)
     return loss
+
+
+def dataRateSC(swatWidthAngle, altitude, bitsPerPixel, pixelSizeArcmin, dutyCycle, downlinkTime, case):
+    swatWidth = 2*altitude*np.tan(np.radians(swatWidthAngle)/2)
+    pixelAngle = 1/60*pixelSizeArcmin
+    pixelSize = 2*altitude*np.tan(np.radians(pixelAngle)/2)
+    if case == 0: v = (MUEARTH/(REARTH+altitude))**0.5
+    elif case == 1: v = (MUMOON/(RADIUSMOON+altitude))**0.5
+    elif case == 2: v = (MUMARS/(RMARS+altitude))**0.5
+    elif case == 3: v = (MUMERCURY/(RMERCURY+altitude))**0.5
+    elif case == 4: v = (MUSATURN/(RSATURN+altitude))**0.5
+    br = bitsPerPixel*(swatWidth*v)/pixelSize**2
+    rbr = br*(dutyCycle)/(downlinkTime/24)
+    return rbr
+
 
 def uplink(diameterGround, downlinkFrequency, turnAroundRatio, lossfactorTransmitter, groundPower, orbitAltitude, atmosphericAttenuation, diameterSC, uplinkDatarate, case, elongationAngle=0):
     uplinkFrequency = downlinkFrequency*turnAroundRatio #Convert downlinkfrequncy into uplink frequncy
@@ -62,8 +90,37 @@ def uplink(diameterGround, downlinkFrequency, turnAroundRatio, lossfactorTransmi
     snr = Eirp - POINTINGLOSSGROUND - spaceLoss - atmosphereLoss + gt - lossDatarate + boltzmannGain
     return snr, values
 
+def downlink(diameterSC, downlinkFrequency, diameterGround, lossfactorTransmitter, scPower, orbitAltitude, atmosphericAttenuation, 
+    swathWidthAngle, bitsPixel, pixelsizeangle, pointingInacuracy, case, dutyCycle, downlinkTime, elongationAngle = 0):
+    gainSC = gainAntenna(downlinkFrequency, diameterSC)
+    gainGround = gainAntenna(downlinkFrequency, diameterGround)
+    Eirp = gainSC+DB(lossfactorTransmitter)+DB(scPower)
+    if case == 0:
+        spaceLoss = spaceLossNormal(orbitAltitude, downlinkFrequency) #Returns non deep space loss of in DB
+    elif case == 1:
+        spaceLoss = spaceLossDeep(EARTHMOONDIS, orbitAltitude+RADIUSMOON, ELEVATION, downlinkFrequency)
+    elif case == 2:
+        spaceLoss = spaceLossDeep(EARTHSUNDIS, MARSSUNDIS, np.radians(elongationAngle), downlinkFrequency)
+    elif case == 3:
+        spaceLoss = spaceLossDeep(EARTHSUNDIS, MERCURYSUNDIS, np.radians(elongationAngle), downlinkFrequency)
+    elif case == 4:
+        spaceLoss = spaceLossDeep(EARTHSUNDIS, SATURNSUNDIS, np.radians(elongationAngle), downlinkFrequency)
+    atmosphereLoss = atmosphericAttenuation/np.sin(ELEVATION)
+    halfAngle = 21/(downlinkFrequency*diameterSC)
+    pointingLoss = 12*(pointingInacuracy/halfAngle)**2
+    gt = gainGround - DB(TSYSDOWNLINK)
+    rdr = dataRateSC(swathWidthAngle, orbitAltitude, bitsPixel, pixelsizeangle,dutyCycle,downlinkTime, case)
+    lossDatarate = DB(rdr)
+    boltzmannGain = -DB(BOLTZMANN)
+    values = [Eirp, pointingLoss, spaceLoss, atmosphereLoss, gt, lossDatarate, boltzmannGain]
+    snr = Eirp - pointingLoss - spaceLoss - atmosphereLoss + gt - lossDatarate + boltzmannGain
+    return snr, values
+
+
+
 if __name__ == "__main__":
     print(uplink(0.5, 2.2, 221/240, 0.8, 400, 500000, 0.035, 0.2, 10**8, 0))
+    print(downlink(0.2, 2.2, 0.5, 0.8, 50, 500000, 0.035, 20, 8, 0.1, 0.1, 0, 0.6, 3))
 
 
 
