@@ -48,7 +48,8 @@ def spaceLossNormal(altitude, frequency):
 
 def spaceLossDeep(distanceEarthx, distanceSCx, angle, frequency):
     length = C/(frequency*10**9) 
-    s = (distanceEarthx**2+distanceSCx**2-2*distanceEarthx*distanceSCx*np.cos(angle))**0.5
+    s = (distanceEarthx**2+distanceSCx**2-2*distanceEarthx*distanceSCx*np.cos(angle))**0.5 
+    print(s)
     loss = 20*np.log10((4*np.pi*s)/length)
     return loss
 
@@ -75,7 +76,7 @@ def uplink(diameterGround, downlinkFrequency, turnAroundRatio, lossfactorTransmi
     if case == 0:
         spaceLoss = spaceLossNormal(orbitAltitude, uplinkFrequency) #Returns non deep space loss of in DB
     elif case == 1:
-        spaceLoss = spaceLossDeep(EARTHMOONDIS, orbitAltitude+RADIUSMOON, ELEVATION, uplinkFrequency)
+        spaceLoss = spaceLossDeep(EARTHMOONDIS, REARTH, ELEVATION+np.radians(90), uplinkFrequency)
     elif case == 2:
         spaceLoss = spaceLossDeep(EARTHSUNDIS, MARSSUNDIS, np.radians(elongationAngle), uplinkFrequency)
     elif case == 3:
@@ -98,7 +99,7 @@ def downlink(diameterSC, downlinkFrequency, diameterGround, lossfactorTransmitte
     if case == 0:
         spaceLoss = spaceLossNormal(orbitAltitude, downlinkFrequency) #Returns non deep space loss of in DB
     elif case == 1:
-        spaceLoss = spaceLossDeep(EARTHMOONDIS, orbitAltitude+RADIUSMOON, ELEVATION, downlinkFrequency)
+        spaceLoss = spaceLossDeep(EARTHMOONDIS, REARTH, ELEVATION+np.radians(90), downlinkFrequency)
     elif case == 2:
         spaceLoss = spaceLossDeep(EARTHSUNDIS, MARSSUNDIS, np.radians(elongationAngle), downlinkFrequency)
     elif case == 3:
