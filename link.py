@@ -120,8 +120,9 @@ def downlink(diameterSC, downlinkFrequency, diameterGround, lossfactorTransmitte
 
 
 if __name__ == "__main__":
-    print(uplink(0.5, 2.2, 221/240, 0.8, 400, 500000, 0.035, 0.2, 10**8, 0))
-    print(downlink(0.2, 2.2, 0.5, 0.8, 50, 500000, 0.035, 20, 8, 0.1, 0.1, 0, 0.6, 3))
+    # print(uplink(0.5, 2.2, 221/240, 0.8, 400, 500000, 0.035, 0.2, 10**8, 0))
+    # print(downlink(0.2, 2.2, 0.5, 0.8, 50, 500000, 0.035, 20, 8, 0.1, 0.1, 0, 0.6, 3))
+    print(dataRateSC(10, 400000, 8, 0.05, 0.15,))
 
 
 

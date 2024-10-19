@@ -1,8 +1,21 @@
 import pandas as pd 
 from link import uplink, downlink
 
+
+# import xlwings as xw
+# import pandas as pd
+
+# Open the active workbook in Excel
+# wb = xw.books.active
+
+# Select the sheet you want to read (e.g., Sheet1)
+# sheet = wb.sheets['Sheet1']
+
+# Read data from the sheet into a Pandas DataFrame
+# df = sheet.used_range.options(pd.DataFrame, index=False, header=True).value
+
 # reading excel file
-teleD = pd.read_excel("telemetryData.xlsx", sheet_name="Sheet1")
+teleD = pd.read_excel("telemetryData.xlsx", sheet_name="Sheet1", engine='openpyxl')
 
 # putting data into list
 total_spacecraft_power = teleD.iloc[0, 1:6].tolist()  
@@ -24,7 +37,7 @@ payload_bits_per_pixel = teleD.iloc[15, 1:6].tolist()
 payload_duty_cycle = teleD.iloc[16, 1:6].tolist()  
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
 required_ber = teleD.iloc[18, 1:6].tolist()
-zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]
+zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]#0.09
 
 
 case = int(input("Which case study? "))-1
