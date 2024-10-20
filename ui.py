@@ -30,6 +30,7 @@ payload_duty_cycle = teleD.iloc[16, 1:6].tolist()
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
 required_ber = teleD.iloc[18, 1:6].tolist()
 zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]  # 0.09
+SNR = [10.5, 10.5, 10.5, 10.5, 10.5]
 
 # constants
 white = (255, 255, 255)
@@ -103,6 +104,7 @@ class InputBox:
 current_screen = "main"
 uplink_results = []
 downlink_results = []
+margin = []
 selected_option = None
 
 # Labels for the input boxes
@@ -160,9 +162,10 @@ def case_study_screen():
     current_screen = "case_study"
 
 def submit_case_study():
-    global current_screen, uplink_results, downlink_results
+    global current_screen, uplink_results, downlink_results, margin
     case_number = case_study_input.text
     if case_number.isdigit() and 1 <= int(case_number) <= 5:
+        
         case = int(case_number) - 1
 
         uplinkData = uplink(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], 
@@ -172,6 +175,8 @@ def submit_case_study():
                                 loss_factor_transmitter[case], transmitter_power_spacecraft[case], orbit_altitude[case], zenith_attenuation[case], 
                                 payload_swath_width[case], payload_bits_per_pixel[case], payload_pixel_size[case], pointing_offset_angle[case], 
                                 case, payload_duty_cycle[case], payload_downlink_time[case], elongation_angle[case])
+        margin.append(uplinkData[0] - SNR[case])
+        margin.append(downlinkData[0] - SNR[case])
         uplink_results = uplinkData
         downlink_results = downlinkData
         current_screen = "results"
@@ -206,31 +211,31 @@ def submit_input_values():
 def results_screen():
     drawText("Link Budget", font, white, scr, scrWidth // 2 - font.size("Link budget")[0] // 2, 50)
 
-    if selected_option == "uplink":
-        # Display Uplink Results
-        drawText(f'Uplink: {uplink_results[0]}', font, white, scr, scrWidth // 2, 100)
-        
-        # Display individual uplink results
-        drawText(f"EIRP: {uplink_results[1][0]}", font, white, scr, scrWidth // 2, 140)
-        drawText(f"Pointingloss: {uplink_results[1][1]}", font, white, scr, scrWidth // 2, 170)
-        drawText(f"Spaceloss: {uplink_results[1][2]}", font, white, scr, scrWidth // 2, 200)
-        drawText(f"Atmosphereloss: {uplink_results[1][3]}", font, white, scr, scrWidth // 2, 230)
-        drawText(f"Gain over T: {uplink_results[1][4]}", font, white, scr, scrWidth // 2, 260)
-        drawText(f"Data Rate Loss: {uplink_results[1][5]}", font, white, scr, scrWidth // 2, 290)
-        drawText(f"Boltzmann Gain: {uplink_results[1][6]}", font, white, scr, scrWidth // 2, 320)
+    # Display Uplink Results
+    drawText(f'Uplink: {uplink_results[0]}', font, brat, scr, 50, 100)
+    drawText(f'Uplink margin: {margin[0]}', font, brat, scr, 50, 130)
+    
+    # Display individual uplink results
+    drawText(f"EIRP: {uplink_results[1][0]}", font, white, scr, 50, 170)
+    drawText(f"Pointingloss: {uplink_results[1][1]}", font, white, scr, 50, 200)
+    drawText(f"Spaceloss: {uplink_results[1][2]}", font, white, scr, 50, 230)
+    drawText(f"Atmosphereloss: {uplink_results[1][3]}", font, white, scr, 50, 260)
+    drawText(f"Gain over T: {uplink_results[1][4]}", font, white, scr, 50, 290)
+    drawText(f"Data Rate Loss: {uplink_results[1][5]}", font, white, scr, 50, 320)
+    drawText(f"Boltzmann Gain: {uplink_results[1][6]}", font, white, scr, 50, 350)
 
-    elif selected_option == "downlink":
-        # Display Downlink Results
-        drawText(f'Downlink: {downlink_results[0]}', font, white, scr, scrWidth // 2, 380)
+    # Display Downlink Results
+    drawText(f'Downlink: {downlink_results[0]}', font, brat, scr, 50, 390)
+    drawText(f'Downlink margin: {margin[1]}', font, brat, scr, 50, 420)
 
-        # Display individual downlink results
-        drawText(f"EIRP: {downlink_results[1][0]}", font, white, scr, scrWidth // 2, 420)
-        drawText(f"Pointingloss: {downlink_results[1][1]}", font, white, scr, scrWidth // 2, 450)
-        drawText(f"Spaceloss: {downlink_results[1][2]}", font, white, scr, scrWidth // 2, 480)
-        drawText(f"Atmosphereloss: {downlink_results[1][3]}", font, white, scr, scrWidth // 2, 510)
-        drawText(f"Gain over T: {downlink_results[1][4]}", font, white, scr, scrWidth // 2, 540)
-        drawText(f"Data Rate Loss: {downlink_results[1][5]}", font, white, scr, scrWidth // 2, 570)
-        drawText(f"Boltzmann Gain: {downlink_results[1][6]}", font, white, scr, scrWidth // 2, 600)
+    # Display individual downlink results
+    drawText(f"EIRP: {downlink_results[1][0]}", font, white, scr, 50, 460)
+    drawText(f"Pointingloss: {downlink_results[1][1]}", font, white, scr, 50, 490)
+    drawText(f"Spaceloss: {downlink_results[1][2]}", font, white, scr, 50, 520)
+    drawText(f"Atmosphereloss: {downlink_results[1][3]}", font, white, scr, 50, 550)
+    drawText(f"Gain over T: {downlink_results[1][4]}", font, white, scr, 50, 580)
+    drawText(f"Data Rate Loss: {downlink_results[1][5]}", font, white, scr, 50, 610)
+    drawText(f"Boltzmann Gain: {downlink_results[1][6]}", font, white, scr, 50, 640)
 
     # Add a button to return to the main menu
     createButton(scrWidth // 2 - buttonWidth // 2, scrHeight - 80, buttonWidth, buttonHeight, "Main Menu", return_to_main)

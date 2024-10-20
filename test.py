@@ -24,6 +24,7 @@ payload_duty_cycle = teleD.iloc[16, 1:6].tolist()
 payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
 required_ber = teleD.iloc[18, 1:6].tolist()
 zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]  # 0.09
+SNR = [10.5, 10.5, 10.5, 10.5, 10.5]
 
 case_number = input("Which case study? ")
 print('\n')
@@ -38,8 +39,14 @@ if case_number.isdigit() and 1 <= int(case_number) <= 5:
                                 loss_factor_transmitter[case], transmitter_power_spacecraft[case], orbit_altitude[case], zenith_attenuation[case], 
                                 payload_swath_width[case], payload_bits_per_pixel[case], payload_pixel_size[case], pointing_offset_angle[case], 
                                 case, payload_duty_cycle[case], payload_downlink_time[case], elongation_angle[case])
+else:
+    print("Invalid case number")
+
+marginUP = uplinkData[0] - SNR[case]
+marginDOWN = downlinkData[0] - SNR[case]
 
 print(f'Uplink: {uplinkData[0]}\n')
+print(f'Margin: {marginUP}\n')
 
 print(f"EIRP: {uplinkData[1][0]}")
 print(f"Pointingloss: {uplinkData[1][1]}")
@@ -50,6 +57,7 @@ print(f"data rate loss: {uplinkData[1][5]}")
 print(f"boltzmanngain: {uplinkData[1][6]}\n")
 
 print(f'Downlink: {downlinkData[0]}\n')
+print(f'Margin: {marginDOWN}\n')
 
 print(f"EIRP: {downlinkData[1][0]}")
 print(f"Pointingloss: {downlinkData[1][1]}")
