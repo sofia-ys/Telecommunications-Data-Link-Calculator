@@ -204,21 +204,37 @@ def submit_input_values():
         print("Please fill all fields with valid numeric values.")
 
 def results_screen():
-    drawText("Link Budget", font, white, scr, scrWidth // 2 - font.size("Link Budget")[0] // 2, 50)
-    
+    drawText("Link Budget", font, white, scr, scrWidth // 2 - font.size("Link budget")[0] // 2, 50)
+
     if selected_option == "uplink":
         # Display Uplink Results
         drawText(f'Uplink: {uplink_results[0]}', font, white, scr, scrWidth // 2, 100)
-        for i, label in enumerate(["EIRP", "Pointingloss", "Spaceloss", "Atmosphereloss", "Gain over T", "Data Rate Loss", "Boltzmanngain"]):
-            drawText(f"{label}: {uplink_results[1][i]}", font, white, scr, scrWidth // 2, 140 + i * 30)
+        
+        # Display individual uplink results
+        drawText(f"EIRP: {uplink_results[1][0]}", font, white, scr, scrWidth // 2, 140)
+        drawText(f"Pointingloss: {uplink_results[1][1]}", font, white, scr, scrWidth // 2, 170)
+        drawText(f"Spaceloss: {uplink_results[1][2]}", font, white, scr, scrWidth // 2, 200)
+        drawText(f"Atmosphereloss: {uplink_results[1][3]}", font, white, scr, scrWidth // 2, 230)
+        drawText(f"Gain over T: {uplink_results[1][4]}", font, white, scr, scrWidth // 2, 260)
+        drawText(f"Data Rate Loss: {uplink_results[1][5]}", font, white, scr, scrWidth // 2, 290)
+        drawText(f"Boltzmann Gain: {uplink_results[1][6]}", font, white, scr, scrWidth // 2, 320)
 
     elif selected_option == "downlink":
         # Display Downlink Results
         drawText(f'Downlink: {downlink_results[0]}', font, white, scr, scrWidth // 2, 380)
-        for i, label in enumerate(["EIRP", "Pointingloss", "Spaceloss", "Atmosphereloss", "Gain over T", "Data Rate Loss", "Boltzmanngain"]):
-            drawText(f"{label}: {downlink_results[1][i]}", font, white, scr, scrWidth // 2, 420 + i * 30)
 
+        # Display individual downlink results
+        drawText(f"EIRP: {downlink_results[1][0]}", font, white, scr, scrWidth // 2, 420)
+        drawText(f"Pointingloss: {downlink_results[1][1]}", font, white, scr, scrWidth // 2, 450)
+        drawText(f"Spaceloss: {downlink_results[1][2]}", font, white, scr, scrWidth // 2, 480)
+        drawText(f"Atmosphereloss: {downlink_results[1][3]}", font, white, scr, scrWidth // 2, 510)
+        drawText(f"Gain over T: {downlink_results[1][4]}", font, white, scr, scrWidth // 2, 540)
+        drawText(f"Data Rate Loss: {downlink_results[1][5]}", font, white, scr, scrWidth // 2, 570)
+        drawText(f"Boltzmann Gain: {downlink_results[1][6]}", font, white, scr, scrWidth // 2, 600)
+
+    # Add a button to return to the main menu
     createButton(scrWidth // 2 - buttonWidth // 2, scrHeight - 80, buttonWidth, buttonHeight, "Main Menu", return_to_main)
+
 
 def return_to_main():
     global current_screen
