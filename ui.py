@@ -36,7 +36,7 @@ white = (255, 255, 255)
 grey = (200, 200, 200)
 brat = (137, 204, 4)
 black = (31, 31, 31)
-scrWidth, scrHeight = 600, 730
+scrWidth, scrHeight = 600, 830
 buttonWidth, buttonHeight = 200, 50
 font = pg.font.SysFont('Arial Narrow', 24)
 
