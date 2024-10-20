@@ -10,7 +10,7 @@ pg.init()
 white = (255, 255, 255)
 grey = (200, 200, 200)
 brat = (137, 204, 4)
-black = (0, 0, 0)
+black = (31, 31, 31)
 scrWidth, scrHeight = 600, 730
 buttonWidth, buttonHeight = 200, 50
 font = pg.font.SysFont('Arial Narrow', 30)
@@ -42,7 +42,7 @@ zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]  # 0.09
 
 # screen setup
 scr = pg.display.set_mode((scrWidth, scrHeight))
-pg.display.set_caption("Link Budget UI")
+pg.display.set_caption("Link Budget Calculator")
 clock = pg.time.Clock()
 
 # making text on screen
@@ -103,6 +103,9 @@ class InputBox:
 
 # Global state to track current screen
 current_screen = "main"
+uplink_results = []
+downlink_results = []
+selected_option = None  # New variable to track the user's choice between Uplink/Downlink
 
 # List of input boxes for the "input values" screen
 input_boxes = []
@@ -118,13 +121,12 @@ def case_study_screen():
     global current_screen
     current_screen = "case_study"
 
-# Handle input values button action
 def input_values_screen():
     global current_screen
-    current_screen = "input_values"
+    current_screen = "select_uplink_downlink"  # New screen for selecting between uplink and downlink
 
-# Handle case study submission
 def submit_case_study():
+    global current_screen, uplink_results, downlink_results
     case_number = case_study_input.text
     if case_number.isdigit() and 1 <= int(case_number) <= 5:
         case = int(case_number) - 1
@@ -145,23 +147,60 @@ def submit_case_study():
             payload_downlink_time[case], elongation_angle[case]
         )
 
-        # Print results once
-        print(f"Case Study Results: Uplink - {uplinkData}, Downlink - {downlinkData}")
+        # Store the results
+        uplink_results = uplinkData
+        downlink_results = downlinkData
+        current_screen = "results"
     else:
         print("Invalid case study number")
 
-# Handle input values submission
+def select_uplink():
+    global current_screen, selected_option, input_boxes
+    selected_option = "uplink"
+    current_screen = "input_values"
+    input_boxes = []  # Reset input boxes
+    for i in range(10):  # Generate 10 boxes for Uplink
+        input_box = InputBox(50, 50 + i * 30, 200, 30)
+        input_boxes.append(input_box)
+
+def select_downlink():
+    global current_screen, selected_option, input_boxes
+    selected_option = "downlink"
+    current_screen = "input_values"
+    input_boxes = []  # Reset input boxes
+    for i in range(14):  # Generate 14 boxes for Downlink
+        input_box = InputBox(50, 50 + i * 30, 200, 30)
+        input_boxes.append(input_box)
+
 def submit_input_values():
+    global current_screen, uplink_results, downlink_results
     values = [box.text for box in input_boxes]
     if all(values):
-        # Call uplink and downlink with the same values
-        uplinkData = uplink(values)
-        downlinkData = downlink(values)
-
-        # Print results once
-        print(f"Input Values Results: Uplink - {uplinkData}, Downlink - {downlinkData}")
+        if selected_option == "uplink":
+            uplinkData = uplink(values)
+            uplink_results = uplinkData
+        elif selected_option == "downlink":
+            downlinkData = downlink(values)
+            downlink_results = downlinkData
+        current_screen = "results"
     else:
         print("Please fill all fields")
+
+def results_screen():
+    drawText("Link Budget", font, white, scr, scrWidth // 2, 50)
+    if selected_option == "uplink":
+        drawText("Uplink:", font, white, scr, scrWidth // 2, 100)
+        for i, result in enumerate(uplink_results):
+            drawText(f"{result}", font, white, scr, scrWidth // 2, 140 + i * 30)
+    elif selected_option == "downlink":
+        drawText("Downlink:", font, white, scr, scrWidth // 2, 300)
+        for i, result in enumerate(downlink_results):
+            drawText(f"{result}", font, white, scr, scrWidth // 2, 340 + i * 30)
+    createButton(scrWidth // 2 - buttonWidth // 2, scrHeight - 80, buttonWidth, buttonHeight, "Main Menu", return_to_main)
+
+def return_to_main():
+    global current_screen
+    current_screen = "main"
 
 
 # Main loop
@@ -176,27 +215,39 @@ while running:
             pass
         elif current_screen == "case_study":
             case_study_input.handle_event(event)
+        elif current_screen == "select_uplink_downlink":
+            pass  # No event handling needed here
         elif current_screen == "input_values":
             for box in input_boxes:
                 box.handle_event(event)
+        elif current_screen == "results":
+            pass
 
     if current_screen == "main":
-        # Draw buttons on the main screen
+        # Main screen buttons (same as before)
         createButton(scrWidth // 2 - buttonWidth // 2, 150, buttonWidth, buttonHeight, "Case Study", case_study_screen)
         createButton(scrWidth // 2 - buttonWidth // 2, 250, buttonWidth, buttonHeight, "Input Values", input_values_screen)
-    
+
     elif current_screen == "case_study":
         drawText("Which case study? (1-5)", font, white, scr, scrWidth // 2, 100)
         case_study_input.update()
         case_study_input.draw(scr)
         createButton(scrWidth // 2 - buttonWidth // 2, 300, buttonWidth, buttonHeight, "Submit", submit_case_study)
 
+    elif current_screen == "select_uplink_downlink":
+        drawText("Select Uplink or Downlink", font, white, scr, scrWidth // 2, 100)
+        createButton(scrWidth // 2 - buttonWidth // 2, 200, buttonWidth, buttonHeight, "Uplink", select_uplink)
+        createButton(scrWidth // 2 - buttonWidth // 2, 300, buttonWidth, buttonHeight, "Downlink", select_downlink)
+
     elif current_screen == "input_values":
-        drawText("Input Values", font, white, scr, scrWidth // 2, 20)
+        drawText(f"Input Values for {selected_option.capitalize()}", font, white, scr, scrWidth // 2, 20)
         for box in input_boxes:
             box.update()
             box.draw(scr)
         createButton(scrWidth // 2 - buttonWidth // 2, scrHeight - 80, buttonWidth, buttonHeight, "Submit", submit_input_values)
+
+    elif current_screen == "results":
+        results_screen()
 
     pg.display.flip()
     clock.tick(30)

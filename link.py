@@ -68,7 +68,8 @@ def dataRateSC(swatWidthAngle, altitude, bitsPerPixel, pixelSizeArcmin, dutyCycl
     return rbr
 
 
-def uplink(diameterGround, downlinkFrequency, turnAroundRatio, lossfactorTransmitter, groundPower, orbitAltitude, atmosphericAttenuation, diameterSC, uplinkDatarate, case, elongationAngle=0):
+def uplink(diameterGround, downlinkFrequency, turnAroundRatio, lossfactorTransmitter, groundPower, orbitAltitude, atmosphericAttenuation, 
+           diameterSC, uplinkDatarate, case, elongationAngle=0):
     uplinkFrequency = downlinkFrequency*turnAroundRatio #Convert downlinkfrequncy into uplink frequncy
     gainSC = gainAntenna(uplinkFrequency, diameterSC) #Returns gain of ground antenna in DB
     gainGround = gainAntenna(uplinkFrequency, diameterGround) #Returns gain of ground antenna in DB

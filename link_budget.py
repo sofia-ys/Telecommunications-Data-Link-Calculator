@@ -40,7 +40,7 @@ required_ber = teleD.iloc[18, 1:6].tolist()
 zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]#0.09
 
 
-case = int(input("Which case study? "))-1
+case = int(input("Which case study? ")) - 1
 print('\n')
 
 uplinkData = uplink(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], transmitter_power_ground[case],
