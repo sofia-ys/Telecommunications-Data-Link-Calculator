@@ -35,8 +35,8 @@ zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]  # 0.09
 white = (255, 255, 255)
 grey = (200, 200, 200)
 brat = (137, 204, 4)
-black = (31, 31, 31)
-scrWidth, scrHeight = 600, 830
+black = (0, 0, 0)
+scrWidth, scrHeight = 600, 750
 buttonWidth, buttonHeight = 200, 50
 font = pg.font.SysFont('Arial Narrow', 24)
 
@@ -116,7 +116,8 @@ uplink_labels = [
     "Atmospheric attenuation:",
     "Antenna diameter spacecraft:",
     "Required uplink data rate:",
-    "Elongation angle:"
+    "Elongation angle:",
+    "Required SNR:"  # New input label for uplink
 ]
 
 downlink_labels = [
@@ -133,7 +134,8 @@ downlink_labels = [
     "Pointing offset angle (spacecraft):",
     "Payload duty cycle:",
     "Payload downlink time:",
-    "Elongation angle:"
+    "Elongation angle:",
+    "Required SNR:"  # New input label for downlink
 ]
 
 # Case study input box
@@ -146,7 +148,7 @@ def create_input_boxes(labels):
     global input_boxes
     input_boxes = []
     for i, label in enumerate(labels):
-        input_box = InputBox(350, 50 + i * 50, 200, 30)  # Adjust x for input box placement
+        input_box = InputBox(350, 50 + i * 40, 200, 30)  # Adjust x for input box placement
         input_boxes.append(input_box)
 
 def input_values_screen():
@@ -163,9 +165,13 @@ def submit_case_study():
     if case_number.isdigit() and 1 <= int(case_number) <= 5:
         case = int(case_number) - 1
 
-        uplinkData = uplink(...)  # Call uplink function
-        downlinkData = downlink(...)  # Call downlink function
-
+        uplinkData = uplink(antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], loss_factor_transmitter[case], 
+                            transmitter_power_ground[case], orbit_altitude[case], zenith_attenuation[case], antenna_diameter_spacecraft[case], 
+                            uplink_data_rate[case], case, elongation_angle[case])
+        downlinkData = downlink(antenna_diameter_spacecraft[case], downlink_frequency[case], antenna_diameter_ground[case], 
+                                loss_factor_transmitter[case], transmitter_power_spacecraft[case], orbit_altitude[case], zenith_attenuation[case], 
+                                payload_swath_width[case], payload_bits_per_pixel[case], payload_pixel_size[case], pointing_offset_angle[case], 
+                                case, payload_duty_cycle[case], payload_downlink_time[case], elongation_angle[case])
         uplink_results = uplinkData
         downlink_results = downlinkData
         current_screen = "results"
@@ -187,25 +193,31 @@ def select_downlink():
 def submit_input_values():
     global current_screen, uplink_results, downlink_results
     values = [box.text for box in input_boxes]
-    if all(values):
+    # Validate if inputs are numeric if needed
+    if all(values) and all(value.replace('.', '', 1).isdigit() for value in values):
         if selected_option == "uplink":
             uplink_results = uplink(values)  # Simulate uplink function
         elif selected_option == "downlink":
             downlink_results = downlink(values)  # Simulate downlink function
         current_screen = "results"
     else:
-        print("Please fill all fields")
+        print("Please fill all fields with valid numeric values.")
 
 def results_screen():
-    drawText("Link Budget", font, white, scr, scrWidth // 2, 50)
+    drawText("Link Budget", font, white, scr, scrWidth // 2 - font.size("Link Budget")[0] // 2, 50)
+    
     if selected_option == "uplink":
-        drawText("Uplink:", font, white, scr, scrWidth // 2, 100)
-        for i, result in enumerate(uplink_results):
-            drawText(f"{result}", font, white, scr, scrWidth // 2, 140 + i * 30)
+        # Display Uplink Results
+        drawText(f'Uplink: {uplink_results[0]}', font, white, scr, scrWidth // 2, 100)
+        for i, label in enumerate(["EIRP", "Pointingloss", "Spaceloss", "Atmosphereloss", "Gain over T", "Data Rate Loss", "Boltzmanngain"]):
+            drawText(f"{label}: {uplink_results[1][i]}", font, white, scr, scrWidth // 2, 140 + i * 30)
+
     elif selected_option == "downlink":
-        drawText("Downlink:", font, white, scr, scrWidth // 2, 300)
-        for i, result in enumerate(downlink_results):
-            drawText(f"{result}", font, white, scr, scrWidth // 2, 340 + i * 30)
+        # Display Downlink Results
+        drawText(f'Downlink: {downlink_results[0]}', font, white, scr, scrWidth // 2, 380)
+        for i, label in enumerate(["EIRP", "Pointingloss", "Spaceloss", "Atmosphereloss", "Gain over T", "Data Rate Loss", "Boltzmanngain"]):
+            drawText(f"{label}: {downlink_results[1][i]}", font, white, scr, scrWidth // 2, 420 + i * 30)
+
     createButton(scrWidth // 2 - buttonWidth // 2, scrHeight - 80, buttonWidth, buttonHeight, "Main Menu", return_to_main)
 
 def return_to_main():
@@ -233,6 +245,7 @@ while running:
             pass
 
     if current_screen == "main":
+        drawText("Calculate link budget", font, white, scr, scrWidth // 2 - font.size("Calculate link budget")[0] // 2, 50)
         createButton(scrWidth // 2 - buttonWidth // 2, 150, buttonWidth, buttonHeight, "Case Study", case_study_screen)
         createButton(scrWidth // 2 - buttonWidth // 2, 250, buttonWidth, buttonHeight, "Input Values", input_values_screen)
 
@@ -249,7 +262,7 @@ while running:
 
     elif current_screen == "input_values":
         for i, label in enumerate(uplink_labels if selected_option == "uplink" else downlink_labels):
-            drawText(label, font, white, scr, 50, 50 + i * 50)
+            drawText(label, font, white, scr, 50, 50 + i * 40)
         for box in input_boxes:
             box.update()
             box.draw(scr)
