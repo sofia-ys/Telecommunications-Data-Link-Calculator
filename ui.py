@@ -1,7 +1,8 @@
 import pygame as pg
+import pandas as pd
 import sys
-from link_budget import uplink
-from link_budget import downlink
+from link import uplink
+from link import downlink
 
 pg.init()
 
@@ -10,9 +11,34 @@ white = (255, 255, 255)
 grey = (200, 200, 200)
 brat = (137, 204, 4)
 black = (0, 0, 0)
-scrWidth, scrHeight = 600, 500
+scrWidth, scrHeight = 600, 730
 buttonWidth, buttonHeight = 200, 50
 font = pg.font.SysFont('Arial Narrow', 30)
+
+# reading excel file
+teleD = pd.read_excel("telemetryData.xlsx", sheet_name="Sheet1", engine='openpyxl')
+
+# putting data into list
+total_spacecraft_power = teleD.iloc[0, 1:6].tolist()  
+transmitter_power_spacecraft = teleD.iloc[1, 1:6].tolist()  
+transmitter_power_ground = teleD.iloc[2, 1:6].tolist()  
+loss_factor_transmitter = teleD.iloc[3, 1:6].tolist()  
+loss_factor_receiver = teleD.iloc[4, 1:6].tolist()  
+downlink_frequency = teleD.iloc[5, 1:6].tolist()  
+turnaround_ratio = teleD.iloc[6, 1:6].tolist()  
+antenna_diameter_spacecraft = teleD.iloc[7, 1:6].tolist()  
+antenna_diameter_ground = teleD.iloc[8, 1:6].tolist()  
+orbit_altitude = teleD.iloc[9, 1:6].tolist()  
+elongation_angle = teleD.iloc[10, 1:6].tolist()  
+pointing_offset_angle = teleD.iloc[11, 1:6].tolist()  
+uplink_data_rate = teleD.iloc[12, 1:6].tolist()  
+payload_swath_width = teleD.iloc[13, 1:6].tolist()  
+payload_pixel_size = teleD.iloc[14, 1:6].tolist()  
+payload_bits_per_pixel = teleD.iloc[15, 1:6].tolist()  
+payload_duty_cycle = teleD.iloc[16, 1:6].tolist()  
+payload_downlink_time = teleD.iloc[17, 1:6].tolist()  
+required_ber = teleD.iloc[18, 1:6].tolist()
+zenith_attenuation = [0.035, 0.035, 0.048, 0.048, 0.049]  # 0.09
 
 # screen setup
 scr = pg.display.set_mode((scrWidth, scrHeight))
@@ -101,9 +127,26 @@ def input_values_screen():
 def submit_case_study():
     case_number = case_study_input.text
     if case_number.isdigit() and 1 <= int(case_number) <= 5:
-        uplinkData = uplink({"case_study": int(case_number)})
-        downlinkData = downlink({"case_study": int(case_number)})
-        print("Case Study Results:", uplinkData, downlinkData)
+        case = int(case_number) - 1
+
+        # Call uplink and downlink once
+        uplinkData = uplink(
+            antenna_diameter_ground[case], downlink_frequency[case], turnaround_ratio[case], 
+            loss_factor_transmitter[case], transmitter_power_ground[case], orbit_altitude[case], 
+            zenith_attenuation[case], antenna_diameter_spacecraft[case], uplink_data_rate[case], 
+            case, elongation_angle[case]
+        )
+
+        downlinkData = downlink(
+            antenna_diameter_spacecraft[case], downlink_frequency[case], antenna_diameter_ground[case], 
+            loss_factor_transmitter[case], transmitter_power_spacecraft[case], orbit_altitude[case], 
+            zenith_attenuation[case], payload_swath_width[case], payload_bits_per_pixel[case], 
+            payload_pixel_size[case], pointing_offset_angle[case], case, payload_duty_cycle[case], 
+            payload_downlink_time[case], elongation_angle[case]
+        )
+
+        # Print results once
+        print(f"Case Study Results: Uplink - {uplinkData}, Downlink - {downlinkData}")
     else:
         print("Invalid case study number")
 
@@ -111,11 +154,15 @@ def submit_case_study():
 def submit_input_values():
     values = [box.text for box in input_boxes]
     if all(values):
+        # Call uplink and downlink with the same values
         uplinkData = uplink(values)
         downlinkData = downlink(values)
-        print("Input Values Results:", uplinkData, downlinkData)
+
+        # Print results once
+        print(f"Input Values Results: Uplink - {uplinkData}, Downlink - {downlinkData}")
     else:
         print("Please fill all fields")
+
 
 # Main loop
 running = True
